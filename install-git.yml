@@ -1,0 +1,10 @@
+--- # This playbook is to install the GIT on the CENTOS machines
+- hosts: webservers
+  sudo: yes
+  gather_facts: no
+  tasks:
+   - name: Install latest  GIT on the machine
+     yum: 
+       use_backend: yum3
+       name: git
+       state: latest

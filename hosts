@@ -1,0 +1,10 @@
+[localhost]
+iccspare1c.mylabserver.com
+
+[webservers]
+172.31.116.225  
+
+[appservers]
+172.31.126.176  
+
+
