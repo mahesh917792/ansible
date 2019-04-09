@@ -8,3 +8,29 @@
        use_backend: yum3
        name: git
        state: latest
+   - name: Install docker related drivers and tools
+     yum:
+      name: "{{ packages}}" 
+     vars:
+      packages:
+       - device-mapper-persistent-data
+       - lvm2
+   - name: Adding the docker repository
+     yum_repository:
+      name: docker
+      description: Docker repo
+      baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+      gpgcheck: no
+      enabled: no
+      warn: no
+   - name: Install the Docker CE and CLI
+     yum:
+      name: "{{ dockertools }}" 
+     vars: 
+      dockertools:
+       - docker-ce
+       - docker-ce-li
+       - containerd.io
+   
+
+         
