@@ -1,5 +1,5 @@
 --- # This playbook is to install the GIT on the CENTOS machines
-- hosts: webservers
+- hosts: all
   sudo: yes
   gather_facts: no
   tasks:
@@ -15,22 +15,24 @@
       packages:
        - device-mapper-persistent-data
        - lvm2
-   - name: Adding the docker repository
-     yum_repository:
-      name: docker
-      description: Docker repo
-      baseurl: https://download.docker.com/linux/centos/docker-ce.repo
-      gpgcheck: no
-      enabled: no
-      warn: no
-   - name: Install the Docker CE and CLI
-     yum:
-      name: "{{ dockertools }}" 
-     vars: 
-      dockertools:
-       - docker-ce
-       - docker-ce-li
-       - containerd.io
-   
+   - name: Adding and installing the docker repo
+     shell: curl -fsSL https://get.docker.com/ | sh
+   - name: start the docker daemon 
+     command: systemctl start docker
+   - name: verifying docker daemon is running
+     command: systemctl status docker
+     register: docker_service
+   - debug: 
+       var: docker_service.stdout_lines
+   - name: creating the  docker group
+     group: 
+       name: docker
+       state: present
+   - name: adding the user to docker group
+     user:
+       name: cloud_user 
+       group: docker
+   - name: enabing docker daemon on boot
+     command: systemctl enable docker
 
          
