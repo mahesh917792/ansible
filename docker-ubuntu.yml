@@ -1,0 +1,33 @@
+--- # This playbook is to install the GIT on the CENTOS machines
+- hosts: all
+  sudo: yes
+  gather_facts: yes
+  tasks:
+   - name: Install prerequisites 
+     apt:
+       name: ['apt-transport-https','ca-certificates','curl','gnupg2','software-properties-common']
+       update_cache: yes    
+   - name: docker-engine install
+     apt:
+       name: ['docker-ce','docker-ce-cli','containerd.io']
+       force: yes
+       state: present
+       update_cache: yes 
+   - name: start the docker daemon 
+     command: systemctl start docker
+   - name: verifying docker daemon is running
+     command: systemctl status docker
+     register: docker_service
+   - debug: 
+       var: docker_service.stdout_lines
+   - name: adding user to docker group    
+     shell: usermod -aG docker cloud_user 
+   - name: enabing docker daemon on boot
+     shell: systemctl enable docker
+   - name: jenkins add repos   
+     sudo: yes
+     shell: wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+     shell: sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+   - name: Jekins install
+     shell: apt-get update && apt-get install jenkins && systemctl start jenkins && ufw allow 8080
+
